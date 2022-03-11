@@ -42,8 +42,8 @@ public class PeopleDto implements Serializable {
         this.homeworld = p.homeworld;
         this.mass = p.mass;
         this.skin_color = p.skin_color;
-        this.created = p.created;
-        this.edited = p.edited;
+        this.created = p.created.toString();
+        this.edited = p.edited.toString();
         this.films = p.getPeople_film().stream()
                 .map(f -> {
                     return new FilmDto(f);

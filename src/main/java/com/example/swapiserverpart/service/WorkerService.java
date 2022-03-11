@@ -39,9 +39,6 @@ public class WorkerService {
         this.session = session;
     }
 
-    public enum SWAPIType {
-        FILM, VEHICLE, SPECIE, PEOPLE, STARSHIP, PLANET, UNKNOWN
-    }
 
     private Set<String> linkSet;
 
@@ -49,7 +46,7 @@ public class WorkerService {
     private String baseUrl = null;
 
     public enum APIType {
-        FILM, VEHICLE, SPECIE, PEOPLE, STARSHIP, PLANET
+        FILM, VEHICLE, SPECIE, PEOPLE, STARSHIP, PLANET, UNKNOWN
     }
 
     public void CollectRootLink(String baseUrl) throws IOException {
@@ -58,7 +55,7 @@ public class WorkerService {
         rootNode = ProcessURL(baseUrl);
         if (rootNode.has("results")) {
             JsonNode entityNode = rootNode.findPath("results");
-            SWAPIType sType = GetRootEntityTypeFromURLProperty(baseUrl);
+            APIType sType = GetRootEntityTypeFromURLProperty(baseUrl);
             if (!entityNode.isNull()) {
                 if (entityNode.isArray()) {
 
@@ -118,21 +115,21 @@ public class WorkerService {
         }
     }
 
-    public SWAPIType GetRootEntityTypeFromURLProperty(String url) {
+    public APIType GetRootEntityTypeFromURLProperty(String url) {
         return url.matches("(.*)people(.*)") ?
-                SWAPIType.PEOPLE : url.matches("(.*)planet(.*)") ?
-                SWAPIType.PLANET : url.matches("(.*)film(.*)") ?
-                SWAPIType.FILM : url.matches("(.*)specie(.*)") ?
-                SWAPIType.SPECIE : url.matches("(.*)vehicle(.*)") ?
-                SWAPIType.VEHICLE : url.matches("(.*)starship(.*)") ?
-                SWAPIType.STARSHIP : SWAPIType.UNKNOWN;
+                APIType.PEOPLE : url.matches("(.*)planet(.*)") ?
+                APIType.PLANET : url.matches("(.*)film(.*)") ?
+                APIType.FILM : url.matches("(.*)specie(.*)") ?
+                APIType.SPECIE : url.matches("(.*)vehicle(.*)") ?
+                APIType.VEHICLE : url.matches("(.*)starship(.*)") ?
+                APIType.STARSHIP : APIType.UNKNOWN;
         }
 
     public Object ProcessEntity(String urlLink) {
         ObjectMapper objMapper;
         try {
             objMapper = new ObjectMapper();
-            SWAPIType sType = GetRootEntityTypeFromURLProperty(urlLink);
+            APIType sType = GetRootEntityTypeFromURLProperty(urlLink);
             JsonNode rootNode = ProcessURL(urlLink);
             //JsonNode jNode = ProcessURL(urlLink);
             return switch (sType) {
@@ -158,24 +155,16 @@ public class WorkerService {
             entityManager.flush();
             entityManager.getTransaction().commit();
             if (pl.getFilms() != null && pl.getFilms().size() > 0) {
-                pl.setPeople_film(pl.getFilms().parallelStream().map(urlLink -> {
-                    return (Film) ProcessEntity(urlLink);
-                }).collect(Collectors.toList()));
+                pl.setPeople_film(pl.getFilms().parallelStream().map(urlLink -> (Film) ProcessEntity(urlLink)).collect(Collectors.toList()));
             }
             if (pl.getVehicles() != null && pl.getVehicles().size() > 0) {
-                pl.setPeople_vehicle(pl.getVehicles().parallelStream().map(urlLink -> {
-                    return (Vehicle) ProcessEntity(urlLink);
-                }).collect(Collectors.toList()));
+                pl.setPeople_vehicle(pl.getVehicles().parallelStream().map(urlLink -> (Vehicle) ProcessEntity(urlLink)).collect(Collectors.toList()));
             }
             if (pl.getStarships() != null && pl.getStarships().size() > 0) {
-                pl.setPeople_starship(pl.getStarships().parallelStream().map(urlLink -> {
-                    return (Starship) ProcessEntity(urlLink);
-                }).collect(Collectors.toList()));
+                pl.setPeople_starship(pl.getStarships().parallelStream().map(urlLink -> (Starship) ProcessEntity(urlLink)).collect(Collectors.toList()));
             }
             if (pl.getSpecies() != null && pl.getSpecies().size() > 0) {
-                pl.setPeople_specie(pl.getSpecies().parallelStream().map(urlLink -> {
-                    return (Specie) ProcessEntity(urlLink);
-                }).collect(Collectors.toList()));
+                pl.setPeople_specie(pl.getSpecies().parallelStream().map(urlLink -> (Specie) ProcessEntity(urlLink)).collect(Collectors.toList()));
             }
             pl.getFilms().clear();
             pl.getSpecies().clear();

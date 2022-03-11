@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,13 +42,13 @@ public class Film extends BaseEntity {
     Clob opening_crawl;
     String director;
     String producer;
-    String release_date;
+    Date release_date;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    String created;
+    Date created;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    String edited;
+    Date edited;
     String title;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

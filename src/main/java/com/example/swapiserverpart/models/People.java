@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,21 +32,21 @@ public class People extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long people_id;
     String url;
-    String name = null;
-    String birth_year = null;
-    String gender = null;
-    String hair_color = null;
-    String eye_color = null;
-    String height = null;
-    String homeworld = null;
-    String mass = null;
-    String skin_color = null;
+    String name;
+    String birth_year;
+    String gender;
+    String hair_color;
+    String eye_color;
+    String height;
+    String homeworld;
+    String mass;
+    String skin_color;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    String created = null;
+    Date created;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    String edited = null;
+    Date edited;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(

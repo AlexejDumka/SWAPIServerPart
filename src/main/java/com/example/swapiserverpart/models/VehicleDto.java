@@ -43,8 +43,8 @@ public class VehicleDto implements Serializable {
         this.max_atmosphering_speed =v. max_atmosphering_speed;
         this.cargo_capacity = v.cargo_capacity;
         this.consumables = v.consumables;
-        this.created = v.created;
-        this.edited = v.edited;
+        this.created = v.created.toString();
+        this.edited = v.edited.toString();
         this.pilots  =v.getVehicle_people().stream()
                 .map(p ->
                 {

@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,11 +42,11 @@ public class Starship extends BaseEntity{
    String cost_in_credits;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    String created;
+    Date created;
     String crew;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    String edited;
+    Date edited;
     String hyperdrive_rating;
     String length;
     String manufacturer;

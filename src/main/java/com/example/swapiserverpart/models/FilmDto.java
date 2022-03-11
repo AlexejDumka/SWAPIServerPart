@@ -42,8 +42,8 @@ public class FilmDto implements Serializable {
         this.director = f.director;
         this.producer = f.producer;
         this.release_date = release_date;
-        this.created = f.created;
-        this.edited = f.edited;
+        this.created = f.created.toString();
+        this.edited = f.edited.toString();
         this.title = f.title;
         this.characters  = f.getFilm_people().stream()
                 .map(p ->

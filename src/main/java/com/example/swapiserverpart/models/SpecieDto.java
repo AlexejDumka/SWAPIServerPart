@@ -41,8 +41,8 @@ public class SpecieDto implements Serializable {
         this.hair_colors = s.hair_colors;
         this.skin_colors = s.skin_colors;
         this.language = s.language;
-        this.created = s.created;
-        this.edited = s.edited;
+        this.created = s.created.toString();
+        this.edited = s.edited.toString();
         this.films = s.getSpecie_film().stream()
                 .map(f -> {
                     return new FilmDto(f);

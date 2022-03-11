@@ -38,9 +38,9 @@ public class StarshipDto implements Serializable {
         this.passengers = s.passengers;
         this.consumables = s.consumables;
         this.cost_in_credits = s.cost_in_credits;
-        this.created = s.created;
+        this.created = s.created.toString();
         this.crew = s.crew;
-        this.edited = s.edited;
+        this.edited = s.edited.toString();
         this.hyperdrive_rating = s.hyperdrive_rating;
         this.length = s.length;
         this.manufacturer = s.manufacturer;

@@ -41,8 +41,8 @@ public class PlanetDto implements Serializable {
         this.terrain = p.terrain;
         this.surface_water = p.surface_water;
         this.population = p.population;
-        this.edited = p.edited;
-        this.created = p.created;
+        this.edited = p.edited.toString();
+        this.created = p.created.toString();
         this.films  =p.getPlanet_film().stream()
                 .map(f ->
                 {
