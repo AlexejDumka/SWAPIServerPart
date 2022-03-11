@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.engine.jdbc.ClobProxy;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -41,7 +42,11 @@ public class Film extends BaseEntity {
     String director;
     String producer;
     String release_date;
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
     String created;
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
     String edited;
     String title;
 

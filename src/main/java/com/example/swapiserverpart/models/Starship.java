@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -37,9 +38,13 @@ public class Starship extends BaseEntity{
     String passengers;
 //    String MGLT;
     String consumables;
-    String cost_in_credits;
+   String cost_in_credits;
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
     String created;
     String crew;
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
     String edited;
     String hyperdrive_rating;
     String length;

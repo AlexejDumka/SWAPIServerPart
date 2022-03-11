@@ -1,12 +1,9 @@
 package com.example.swapiserverpart.web;
-
-import com.example.swapiserverpart.repository.PeopleRepo;
 import com.example.swapiserverpart.service.WorkerService;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
@@ -22,13 +19,11 @@ import java.util.*;
 @Getter
 @Setter
 public class SWAPISearchController {
-    @Autowired
-    private PeopleRepo peopleRepo;
     private final EntityManager entityManager;
     private final SessionFactory sessionFactory;
     private Session session;
 
-    public SWAPISearchController(EntityManager entityManager) {
+    public SWAPISearchController() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("SWAPI");
         this.entityManager = emf.createEntityManager();
         this.sessionFactory = emf.unwrap(SessionFactory.class);
@@ -38,7 +33,7 @@ public class SWAPISearchController {
 
     @CrossOrigin(origins = "http://127.0.0.1:8081/people")
     @RequestMapping(value = "/people/{name}", method = RequestMethod.GET, produces = "application/json")
-    public String getHumanByName(@PathVariable String name) throws IOException, SQLException {
+    public String getHumanByName(@PathVariable String name) throws IOException {
         List<?> peopleList = getEntityManager().createQuery("SELECT people FROM People people WHERE people.name like ?1")
                 .setParameter(1, name + "%")
                 .getResultList();
@@ -48,7 +43,7 @@ public class SWAPISearchController {
 
     @CrossOrigin(origins = "http://127.0.0.1:8081/film")
     @RequestMapping(value = "/film/{title}", method = RequestMethod.GET, produces = "application/json")
-    public String getFilmByTitle(@PathVariable String title) throws IOException, SQLException {
+    public String getFilmByTitle(@PathVariable String title) throws IOException{
         List<?> filmList = getEntityManager().createQuery("SELECT film from Film film where film.title like ?1")
                 .setParameter(1, title + "%")
                 .getResultList();
@@ -67,7 +62,7 @@ public class SWAPISearchController {
     }
     @CrossOrigin(origins = "http://localhost:8081/specie")
     @RequestMapping(value = "/specie/{name}", method = RequestMethod.GET, produces = "application/json")
-    public String getSpeciesByName(@PathVariable String name) throws IOException, SQLException {
+    public String getSpeciesByName(@PathVariable String name) throws IOException {
 
         List<?> specieList = getEntityManager().createQuery("SELECT specie FROM Specie specie WHERE specie.name like ?1")
                 .setParameter(1, name + "%")
@@ -87,7 +82,7 @@ public class SWAPISearchController {
 
     @CrossOrigin(origins = "http://127.0.0.1:8081/starship")
     @RequestMapping(value = "/starship/{name}", method = RequestMethod.GET, produces = "application/json")
-    public String getStarshipByName(@PathVariable String name) throws IOException, SQLException {
+    public String getStarshipByName(@PathVariable String name) throws IOException {
         List<?> starshipList = getEntityManager().createQuery("SELECT starship FROM Starship starship WHERE starship.name like ?1")
                 .setParameter(1, name + "%")
                 .getResultList();

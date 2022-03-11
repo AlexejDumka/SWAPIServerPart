@@ -8,11 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -21,9 +17,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter
@@ -61,7 +58,7 @@ public class WorkerService {
         rootNode = ProcessURL(baseUrl);
         if (rootNode.has("results")) {
             JsonNode entityNode = rootNode.findPath("results");
-            SWAPIType sType = GetEntityTypeFromUrl(baseUrl);
+            SWAPIType sType = GetRootEntityTypeFromURLProperty(baseUrl);
             if (!entityNode.isNull()) {
                 if (entityNode.isArray()) {
 
@@ -121,23 +118,21 @@ public class WorkerService {
         }
     }
 
-    public SWAPIType GetEntityTypeFromUrl(String url) {
-        SWAPIType type = url.matches("(.*)people(.*)") ?
+    public SWAPIType GetRootEntityTypeFromURLProperty(String url) {
+        return url.matches("(.*)people(.*)") ?
                 SWAPIType.PEOPLE : url.matches("(.*)planet(.*)") ?
                 SWAPIType.PLANET : url.matches("(.*)film(.*)") ?
                 SWAPIType.FILM : url.matches("(.*)specie(.*)") ?
                 SWAPIType.SPECIE : url.matches("(.*)vehicle(.*)") ?
                 SWAPIType.VEHICLE : url.matches("(.*)starship(.*)") ?
                 SWAPIType.STARSHIP : SWAPIType.UNKNOWN;
-        return type;
-
-    }
+        }
 
     public Object ProcessEntity(String urlLink) {
         ObjectMapper objMapper;
         try {
             objMapper = new ObjectMapper();
-            SWAPIType sType = GetEntityTypeFromUrl(urlLink);
+            SWAPIType sType = GetRootEntityTypeFromURLProperty(urlLink);
             JsonNode rootNode = ProcessURL(urlLink);
             //JsonNode jNode = ProcessURL(urlLink);
             return switch (sType) {
@@ -192,7 +187,7 @@ public class WorkerService {
             entityManager.flush();
             entityManager.getTransaction().commit();
         } catch (Exception e) {
-            throw e;
+            e.printStackTrace();
         }
 
     }
@@ -211,11 +206,7 @@ public class WorkerService {
 
         }
         if (planet.getFilms() != null && planet.getFilms().size() > 0) {
-            planet.setPlanet_film(planet.getFilms().parallelStream().map(urlLink -> {
-
-                return (Film) ProcessEntity(urlLink);
-
-            }).collect(Collectors.toList()));
+            planet.setPlanet_film(planet.getFilms().parallelStream().map(urlLink -> (Film) ProcessEntity(urlLink)).collect(Collectors.toList()));
         }
         planet.getFilms().clear();
         planet.getPeople().clear();
@@ -231,14 +222,10 @@ public class WorkerService {
         entityManager.flush();
         entityManager.getTransaction().commit();
         if (film.getStarships() != null && film.getStarships().size() > 0) {
-            film.setFilm_starship(film.getStarships().parallelStream().map(urlLink -> {
-                return (Starship) ProcessEntity(urlLink);
-            }).collect(Collectors.toList()));
+            film.setFilm_starship(film.getStarships().parallelStream().map(urlLink -> (Starship) ProcessEntity(urlLink)).collect(Collectors.toList()));
         }
         if (film.getVehicles() != null && film.getVehicles().size() > 0) {
-            film.setFilm_vehicle(film.getVehicles().parallelStream().map(urlLink -> {
-                return (Vehicle) ProcessEntity(urlLink);
-            }).collect(Collectors.toList()));
+            film.setFilm_vehicle(film.getVehicles().parallelStream().map(urlLink -> (Vehicle) ProcessEntity(urlLink)).collect(Collectors.toList()));
         }
         if (film.getSpecies() != null && film.getSpecies().size() > 0) {
             film.setFilm_specie(film.getSpecies().parallelStream().map(urlLink -> {
@@ -246,14 +233,10 @@ public class WorkerService {
             }).collect(Collectors.toList()));
         }
         if (film.getPlanets() != null && film.getPlanets().size() > 0) {
-            film.setFilm_planet(film.getPlanets().parallelStream().map(urlLink -> {
-                return (Planet) ProcessEntity(urlLink);
-            }).collect(Collectors.toList()));
+            film.setFilm_planet(film.getPlanets().parallelStream().map(urlLink -> (Planet) ProcessEntity(urlLink)).collect(Collectors.toList()));
         }
         if (film.getPeople() != null && film.getPeople().size() > 0) {
-            film.setFilm_people(film.getPeople().parallelStream().map(urlLink -> {
-                return (People) ProcessEntity(urlLink);
-            }).collect(Collectors.toList()));
+            film.setFilm_people(film.getPeople().parallelStream().map(urlLink -> (People) ProcessEntity(urlLink)).collect(Collectors.toList()));
         }
         film.getPlanets().clear();
         film.getPeople().clear();
@@ -393,33 +376,7 @@ public class WorkerService {
             }
         }
         builder.append("]");
-        String result = builder.toString();
-        // final String pattern = Pattern.compile("(\\}\\s\\{)|(\\}\\n\\{)|((\\})(\\s)(\\{))|((\\}).(\\s)(\\{))", Pattern.CASE_INSENSITIVE).matcher(result).replaceAll("},{");
-        return result;
+        return builder.toString();
 
-    }
-
-    public void listPeople() {
-        SessionFactory factory=null;
-        try {
-            factory = new Configuration().configure().buildSessionFactory();
-        } catch (Throwable ex) {
-            Session session = factory.openSession();
-            Transaction tx = null;
-            try {
-                tx = session.beginTransaction();
-                List peopleList = session.createQuery("FROM People ").list();
-                for (Iterator iterator = peopleList.iterator(); iterator.hasNext(); ) {
-                    People people = (People) iterator.next();
-
-                }
-                tx.commit();
-            } catch (HibernateException e) {
-                if (tx != null) tx.rollback();
-                e.printStackTrace();
-            } finally {
-                session.close();
-            }
-        }
     }
 }

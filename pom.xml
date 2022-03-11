@@ -12,6 +12,7 @@
     <artifactId>SWAPIServerPart</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>SWAPIServerPart</name>
+    <packaging>war</packaging>
     <description>SWAPIServerPart</description>
     <properties>
         <java.version>11</java.version>
