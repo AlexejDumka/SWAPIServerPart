@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(
         name = "planet",
@@ -53,4 +54,17 @@ public class Planet  extends BaseEntity {
             foreignKey = @ForeignKey(name = "fk_planet_film_id")
     )
     private List<Film> planet_film = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Planet planet = (Planet) o;
+        return url.equals(planet.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
+    }
 }

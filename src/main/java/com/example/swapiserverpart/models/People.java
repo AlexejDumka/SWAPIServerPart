@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(
         name = "people",
@@ -67,4 +68,16 @@ public class People extends BaseEntity {
     )
     private List<Starship> people_starship = new ArrayList<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        People people = (People) o;
+        return Objects.equals(url, people.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
+    }
 }

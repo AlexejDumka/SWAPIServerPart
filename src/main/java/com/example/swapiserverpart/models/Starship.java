@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(
         name = "starship",
@@ -60,4 +61,16 @@ public class Starship extends BaseEntity{
     )
     private List<Film> starship_film = new ArrayList<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Starship starship = (Starship) o;
+        return Objects.equals(url, starship.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
+    }
 }

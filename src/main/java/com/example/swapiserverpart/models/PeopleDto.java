@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ public class PeopleDto implements Serializable {
     private String skin_color;
     private String created;
     private String edited;
-
     public PeopleDto(People p) {
         this.people_id = p.people_id;
         this.url = p.url;
@@ -75,37 +73,15 @@ public class PeopleDto implements Serializable {
 
                 })
                 .collect(Collectors.toList());
+   }
 
-    }
     List<FilmDto> films = new ArrayList<>();
     List<SpecieDto> species = new ArrayList<>();
     List<VehicleDto> vehicles = new ArrayList<>();
     List<StarshipDto> starships = new ArrayList<>();
 
 
-
-
-
-
-
-    @Override
-    public String toString() {
-         return
-                "people_id=" + people_id +
-                ", url=" + url +
-                ", name=" + name +
-                ", birth_year=" + birth_year +
-                ", gender=" + gender +
-                ", hair_color=" + hair_color +
-                ", eye_color=" + eye_color +
-                ", height=" + height +
-                ", homeworld=" + homeworld +
-                ", mass=" + mass +
-                ", skin_color=" + skin_color +
-                ", created=" + created +
-                ", edited=" + edited ;
-    }
-    String toJson() throws JsonProcessingException {
+ String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
 

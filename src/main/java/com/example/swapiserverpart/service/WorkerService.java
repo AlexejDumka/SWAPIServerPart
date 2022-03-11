@@ -8,7 +8,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +22,8 @@ import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter
@@ -31,6 +37,7 @@ public class WorkerService {
     public WorkerService(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
+
     public WorkerService(Session session) {
         this.session = session;
     }
@@ -47,6 +54,7 @@ public class WorkerService {
     public enum APIType {
         FILM, VEHICLE, SPECIE, PEOPLE, STARSHIP, PLANET
     }
+
     public void CollectRootLink(String baseUrl) throws IOException {
         JsonNode rootNode;
         ObjectMapper mapper = new ObjectMapper();
@@ -280,6 +288,7 @@ public class WorkerService {
         entityManager.flush();
         entityManager.getTransaction().commit();
     }
+
     public void PersistVehicleWithNestedCollections(Vehicle vehicle) {
         entityManager.getTransaction().begin();
         entityManager.persist(vehicle);
@@ -302,6 +311,7 @@ public class WorkerService {
         entityManager.flush();
         entityManager.getTransaction().commit();
     }
+
     public void PersistStarshipWithNestedCollections(Starship starship) {
         entityManager.getTransaction().begin();
         entityManager.persist(starship);
@@ -324,6 +334,7 @@ public class WorkerService {
         entityManager.flush();
         entityManager.getTransaction().commit();
     }
+
     @Async
     public JsonNode ProcessURL(String urlLink) throws JsonProcessingException {
         RestTemplate rest = new RestTemplate();
@@ -334,26 +345,81 @@ public class WorkerService {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readTree(entityJson);
     }
+
     public String EntityToJson(List<Object> entitiesList) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder builder = new StringBuilder();
+        Object entity;
         builder.append("[");
         for (int i = 0; i < entitiesList.size(); i++) {
-            Object entity = entitiesList.get(i);
+            entity = entitiesList.get(i);
             if (entity instanceof People) {
-                People people = (People) entity;
-                PeopleDto peopleDto = new PeopleDto(people);
-                builder.append(mapper.writeValueAsString(peopleDto));
-               mapper.writeValueAsString(peopleDto);
-                if ((i > 0) && i < entitiesList.size()-1) {
+                builder.append(mapper.writeValueAsString(new PeopleDto((People) entity)));
+                if (i < entitiesList.size() - 1) {
+                    builder.append(",");
+                }
+            }
+            if (entity instanceof Planet) {
+                entity = entitiesList.get(i);
+                builder.append(mapper.writeValueAsString(new PlanetDto((Planet) entity)));
+
+                if (i < entitiesList.size() - 1) {
+                    builder.append(",");
+                }
+            }
+            if (entity instanceof Film) {
+                builder.append(mapper.writeValueAsString(new FilmDto((Film) entitiesList.get(i))));
+                if (i < entitiesList.size() - 1) {
+                    builder.append(",");
+                }
+            }
+            if (entity instanceof Vehicle) {
+                builder.append(mapper.writeValueAsString(new VehicleDto((Vehicle) entitiesList.get(i))));
+                if (i < entitiesList.size() - 1) {
+                    builder.append(",");
+                }
+            }
+            if (entity instanceof Starship) {
+                builder.append(mapper.writeValueAsString(new StarshipDto((Starship) entitiesList.get(i))));
+                if (i < entitiesList.size() - 1) {
+                    builder.append(",");
+                }
+            }
+            if (entity instanceof Specie) {
+                builder.append(mapper.writeValueAsString(new SpecieDto((Specie) entitiesList.get(i))));
+                if (i < entitiesList.size() - 1) {
                     builder.append(",");
                 }
             }
         }
         builder.append("]");
-        return builder.toString();
+        String result = builder.toString();
+        // final String pattern = Pattern.compile("(\\}\\s\\{)|(\\}\\n\\{)|((\\})(\\s)(\\{))|((\\}).(\\s)(\\{))", Pattern.CASE_INSENSITIVE).matcher(result).replaceAll("},{");
+        return result;
+
+    }
+
+    public void listPeople() {
+        SessionFactory factory=null;
+        try {
+            factory = new Configuration().configure().buildSessionFactory();
+        } catch (Throwable ex) {
+            Session session = factory.openSession();
+            Transaction tx = null;
+            try {
+                tx = session.beginTransaction();
+                List peopleList = session.createQuery("FROM People ").list();
+                for (Iterator iterator = peopleList.iterator(); iterator.hasNext(); ) {
+                    People people = (People) iterator.next();
+
+                }
+                tx.commit();
+            } catch (HibernateException e) {
+                if (tx != null) tx.rollback();
+                e.printStackTrace();
+            } finally {
+                session.close();
+            }
+        }
     }
 }
-
-
-

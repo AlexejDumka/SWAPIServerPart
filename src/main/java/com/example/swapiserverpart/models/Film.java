@@ -13,6 +13,8 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 @Table(
         name = "film",
         uniqueConstraints =  @UniqueConstraint(
@@ -89,6 +91,19 @@ public class Film extends BaseEntity {
 
         j++;
         return buffer.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Film film = (Film) o;
+        return episode_id == film.episode_id && Objects.equals(film_id, film.film_id) && Objects.equals(url, film.url) && Objects.equals(opening_crawl, film.opening_crawl) && Objects.equals(director, film.director) && Objects.equals(producer, film.producer) && Objects.equals(release_date, film.release_date) && Objects.equals(created, film.created) && Objects.equals(edited, film.edited) && Objects.equals(title, film.title) && Objects.equals(film_people, film.film_people) && Objects.equals(film_specie, film.film_specie) && Objects.equals(film_vehicle, film.film_vehicle) && Objects.equals(film_starship, film.film_starship) && Objects.equals(film_planet, film.film_planet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
     }
 }
 
